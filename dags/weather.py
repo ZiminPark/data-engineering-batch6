@@ -20,6 +20,7 @@ def get_Redshift_connection():
 def extract(**context):
     params = context["params"]
     api_key = params["api_key"]
+    logging.info(api_key)
     lat, lon = params["lat"], params["lon"]
     api = 'https://api.openweathermap.org/data/2.5/onecall' \
           f'?lat={lat}' \
@@ -76,7 +77,7 @@ extract = PythonOperator(
     params={
         'api_key': Variable.get("open_weather_api_key"),
         'lat': LATITUDE,
-        'long': LONGITUDE,
+        'lon': LONGITUDE,
     },
     provide_context=True,
     dag=weather_dag
@@ -99,3 +100,5 @@ load = PythonOperator(
     provide_context=True,
     dag=weather_dag
 )
+
+extract >> transform >> load

@@ -50,10 +50,10 @@ def load(**context):
     for day in daily:
         date = datetime.fromtimestamp(day["dt"]).strftime('%Y-%m-%d')
         temp = day['temp']
-        values = [date, temp['day'], temp['min'], temp['max']]
+        values = [f"'{date}'", temp['day'], temp['min'], temp['max']]
         values = ', '.join([str(i) for i in values])
         print(values)
-        sql += f"""INSERT INTO VALUES ('{values}')"""
+        sql += f"""INSERT INTO {schema}.{table} VALUES ({values});"""
     sql += "END;"
     logging.info(sql)
     cur.execute(sql)
@@ -66,8 +66,8 @@ weather_dag = DAG(
     max_active_runs=1,
     catchup=True,
     default_args={
-        'retries': 1,
-        'retry_delay': timedelta(minutes=3),
+        'retries': 2,
+        'retry_delay': timedelta(minutes=1),
     }
 )
 
